@@ -1,0 +1,1110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trading Toolkit</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+  :root {
+    --bg:       #111418;
+    --surface:  #1a1f26;
+    --surface2: #222830;
+    --border:   #2e3740;
+    --accent:   #22d3a0;
+    --amber:    #f5a623;
+    --red:      #f05252;
+    --blue:     #60a5fa;
+    --purple:   #c084fc;
+    --text:     #e8edf2;
+    --text2:    #9eaab8;
+    --text3:    #5c6b7a;
+    --check-bg: rgba(34,211,160,0.07);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── HEADER ── */
+  header {
+    text-align: center;
+    padding: 18px 16px 0;
+    flex-shrink: 0;
+  }
+  header h1 {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--text);
+    letter-spacing: -0.01em;
+    margin-bottom: 3px;
+  }
+  header p { font-size: 0.8rem; color: var(--text2); margin-bottom: 14px; }
+
+  /* ── TAB BAR ── */
+  .tabbar {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    flex-shrink: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabbar::-webkit-scrollbar { display: none; }
+
+  .tab {
+    flex: 1;
+    min-width: 90px;
+    padding: 11px 8px;
+    text-align: center;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text2);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: color 0.15s, border-color 0.15s;
+    user-select: none;
+    white-space: nowrap;
+  }
+  .tab:hover { color: var(--text); }
+  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
+  .tab .tab-icon { margin-right: 5px; }
+
+  /* ── PANELS ── */
+  .panel { display: none; padding: 18px 16px 52px; flex: 1; }
+  .panel.active { display: block; }
+
+  /* ── SHARED: CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 14px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .card-title {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text2);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .card-title::before {
+    content: '';
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  .divider { height: 1px; background: var(--border); margin: 14px 0; }
+
+  /* ── SHARED: INPUTS ── */
+  .input-group { margin-bottom: 14px; }
+  .input-group:last-child { margin-bottom: 0; }
+  .input-group label {
+    display: block;
+    font-size: 0.8rem; font-weight: 600;
+    color: var(--text2); margin-bottom: 7px;
+  }
+  .input-row {
+    display: flex; align-items: center;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 7px; overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .input-row:focus-within { border-color: var(--accent); }
+  .input-prefix {
+    padding: 0 13px;
+    font-size: 0.95rem; font-weight: 600;
+    color: var(--text2);
+    border-right: 1px solid var(--border);
+    height: 46px; display: flex; align-items: center; flex-shrink: 0;
+  }
+  input[type="number"] {
+    background: none; border: none; outline: none;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 1rem; font-weight: 600;
+    padding: 0 13px; height: 46px; width: 100%;
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-inner-spin-button { display: none; }
+
+  /* ── SHARED: SLIDER ── */
+  .slider-group { margin-bottom: 14px; }
+  .slider-label-row {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 10px;
+  }
+  .slider-label-row label { font-size: 0.8rem; font-weight: 600; color: var(--text2); }
+  .slider-value { font-size: 1.05rem; font-weight: 700; color: var(--accent); }
+
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 5px; border-radius: 3px;
+    background: var(--border); outline: none; cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--accent); cursor: pointer;
+    border: 3px solid var(--bg); box-shadow: 0 0 0 1px var(--accent);
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--accent); cursor: pointer; border: 3px solid var(--bg);
+  }
+
+  /* ────────────────────────────────────────────
+     TAB 1 — CHECKLIST
+  ──────────────────────────────────────────── */
+  .progress-block { max-width: 600px; margin: 0 auto 16px; }
+  .progress-label {
+    font-size: 0.8rem; font-weight: 500; color: var(--text2);
+    margin-bottom: 7px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .progress-label span { font-weight: 700; color: var(--accent); }
+  .progress-wrap { background: var(--border); border-radius: 4px; height: 5px; overflow: hidden; }
+  .progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--amber));
+    width: 0%; transition: width 0.4s ease; border-radius: 4px;
+  }
+
+  .all-clear {
+    max-width: 600px; margin: 0 auto 14px;
+    background: rgba(34,211,160,0.1);
+    border: 1px solid rgba(34,211,160,0.4);
+    border-radius: 8px; padding: 12px 18px; text-align: center; display: none;
+  }
+  .all-clear.show { display: block; }
+  .all-clear-title { font-size: 0.95rem; font-weight: 700; color: var(--accent); margin-bottom: 2px; }
+  .all-clear-sub   { font-size: 0.82rem; color: var(--text2); }
+
+  .section {
+    max-width: 600px; margin: 0 auto 12px;
+    border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+    transition: border-color 0.25s;
+  }
+  .section.all-done { border-color: rgba(34,211,160,0.5); }
+
+  .section-header {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 14px;
+    background: var(--surface);
+    cursor: pointer; user-select: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .section.collapsed .section-header { border-bottom: none; }
+  .section-icon { font-size: 1rem; flex-shrink: 0; }
+  .section-title { font-size: 0.92rem; font-weight: 600; color: var(--text); flex: 1; }
+  .section-time {
+    font-size: 0.75rem; font-weight: 500; color: var(--text2);
+    background: var(--surface2); border: 1px solid var(--border);
+    padding: 2px 8px; border-radius: 4px; white-space: nowrap;
+  }
+  .section-count { font-size: 0.8rem; font-weight: 700; color: var(--accent); min-width: 36px; text-align: right; }
+  .chevron { color: var(--text3); font-size: 0.7rem; transition: transform 0.2s; flex-shrink: 0; }
+  .section.collapsed .chevron { transform: rotate(-90deg); }
+  .section.collapsed .items { display: none; }
+  .items { padding: 4px 0 6px; }
+
+  .group-label {
+    font-size: 0.7rem; font-weight: 600; color: var(--text3);
+    text-transform: uppercase; letter-spacing: 0.07em;
+    padding: 10px 14px 4px;
+    border-top: 1px solid var(--border); margin-top: 2px;
+  }
+  .group-label:first-child { border-top: none; margin-top: 0; padding-top: 6px; }
+
+  .item {
+    display: flex; align-items: flex-start; gap: 11px;
+    padding: 9px 14px; cursor: pointer; transition: background 0.12s;
+  }
+  .item:hover { background: rgba(255,255,255,0.025); }
+  .item.checked { background: var(--check-bg); }
+  .item.checked .item-text { color: var(--text3); text-decoration: line-through; text-decoration-color: rgba(34,211,160,0.5); }
+
+  .checkbox {
+    width: 17px; height: 17px; flex-shrink: 0; margin-top: 1px;
+    border: 2px solid var(--border); border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; font-size: 0.65rem; color: transparent;
+  }
+  .item.checked .checkbox { background: var(--accent); border-color: var(--accent); color: #0a0c0e; font-weight: 700; }
+
+  .item-text { font-size: 0.92rem; font-weight: 400; line-height: 1.45; color: var(--text); }
+
+  .item-tag {
+    display: inline-block; font-size: 0.67rem; font-weight: 600;
+    padding: 1px 6px; border-radius: 4px; margin-left: 6px;
+    vertical-align: middle; white-space: nowrap;
+  }
+  .tag-signal   { background: rgba(96,165,250,0.15); color: var(--blue); }
+  .tag-barchart { background: rgba(245,166,35,0.15);  color: var(--amber); }
+  .tag-key      { background: rgba(192,132,252,0.15); color: var(--purple); }
+  .tag-rule     { background: rgba(34,211,160,0.12);  color: var(--accent); }
+
+  .reset-wrap { max-width: 600px; margin: 14px auto 0; text-align: center; }
+  .reset-btn {
+    font-size: 0.82rem; font-weight: 500; color: var(--text2);
+    background: none; border: 1px solid var(--border);
+    padding: 8px 20px; border-radius: 6px; cursor: pointer; transition: all 0.15s;
+  }
+  .reset-btn:hover { color: var(--red); border-color: var(--red); }
+
+  /* ────────────────────────────────────────────
+     TAB 2 — BARCHART MATRIX
+  ──────────────────────────────────────────── */
+  .matrix-panel { max-width: 600px; margin: 0 auto; }
+
+  .matrix-intro {
+    font-size: 0.88rem; line-height: 1.6; color: var(--text2);
+    margin-bottom: 18px; padding: 14px 16px;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+  }
+  .matrix-intro strong { color: var(--text); font-weight: 600; }
+
+  .dir-toggle-wrap { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; flex-wrap: wrap; }
+  .dir-toggle-label { font-size: 0.82rem; font-weight: 600; color: var(--text2); white-space: nowrap; }
+  .dir-toggle { display: flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .dir-btn {
+    padding: 8px 22px; font-size: 0.85rem; font-weight: 600;
+    cursor: pointer; user-select: none; color: var(--text2);
+    background: var(--surface); transition: all 0.15s;
+  }
+  .dir-btn:first-child { border-right: 1px solid var(--border); }
+  .dir-btn:hover { color: var(--text); }
+  .dir-btn.active.long-active  { color: #0a0c0e; background: var(--accent); }
+  .dir-btn.active.short-active { color: #fff; background: var(--red); }
+
+  .ref-cards { display: flex; flex-direction: column; gap: 12px; margin-bottom: 22px; }
+  .ref-card { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .ref-card-header { padding: 10px 14px; background: var(--surface); border-bottom: 1px solid var(--border); }
+  .ref-card-title { font-size: 0.9rem; font-weight: 700; color: var(--text); display: block; margin-bottom: 1px; }
+  .ref-card-sub   { font-size: 0.75rem; color: var(--text2); }
+
+  .ref-rows { padding: 0; }
+  .ref-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 14px; border-bottom: 1px solid var(--border);
+  }
+  .ref-row:last-child { border-bottom: none; }
+  .ref-val     { font-size: 0.82rem; font-weight: 600; color: var(--text); min-width: 110px; flex-shrink: 0; }
+  .ref-meaning { font-size: 0.85rem; color: var(--text2); flex: 1; line-height: 1.4; }
+  .ref-action  { font-size: 0.72rem; font-weight: 700; padding: 3px 9px; border-radius: 5px; white-space: nowrap; flex-shrink: 0; }
+  .act-pass { background: rgba(34,211,160,0.15); color: var(--accent); }
+  .act-warn { background: rgba(245,166,35,0.15);  color: var(--amber); }
+  .act-fail { background: rgba(240,82,82,0.15);   color: var(--red); }
+
+  .matrix-divider { display: flex; align-items: center; gap: 12px; margin: 4px 0 18px; }
+  .matrix-divider-line { flex: 1; height: 1px; background: var(--border); }
+  .matrix-divider-text { font-size: 0.72rem; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; }
+
+  .scorer-card { border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .scorer-header {
+    padding: 11px 16px; background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .scorer-title { font-size: 0.92rem; font-weight: 700; color: var(--text); flex: 1; }
+  .live-badge {
+    font-size: 0.72rem; font-weight: 600; color: var(--accent);
+    background: rgba(34,211,160,0.1); border: 1px solid rgba(34,211,160,0.3);
+    padding: 2px 9px; border-radius: 20px; animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+
+  .scorer-inputs {
+    display: grid; grid-template-columns: 1fr 1fr 1fr;
+    gap: 12px; padding: 16px; border-bottom: 1px solid var(--border);
+  }
+  .scorer-field { display: flex; flex-direction: column; gap: 6px; }
+  .scorer-field label { font-size: 0.75rem; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.05em; }
+  .scorer-field select {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); font-family: 'Inter', sans-serif;
+    font-size: 0.88rem; font-weight: 500;
+    padding: 8px 10px; border-radius: 6px; outline: none; cursor: pointer;
+    transition: border-color 0.15s; appearance: none; -webkit-appearance: none; width: 100%;
+  }
+  .scorer-field select:focus { border-color: var(--accent); }
+  .scorer-field select option { background: #1a1f26; }
+
+  .verdict-area { padding: 16px; }
+  .verdict-waiting { text-align: center; font-size: 0.85rem; font-weight: 500; color: var(--text3); padding: 18px 0; }
+  .verdict-result { display: none; }
+  .verdict-result.show { display: block; }
+  .verdict-top { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .signal-dots { display: flex; gap: 6px; }
+  .dot { width: 11px; height: 11px; border-radius: 50%; background: var(--surface2); border: 2px solid var(--border); transition: all 0.3s; }
+  .dot.green  { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 8px rgba(34,211,160,0.5); }
+  .dot.yellow { background: var(--amber);  border-color: var(--amber);  box-shadow: 0 0 8px rgba(245,166,35,0.5); }
+  .dot.red    { background: var(--red);    border-color: var(--red);    box-shadow: 0 0 8px rgba(240,82,82,0.5); }
+  .verdict-label-text { font-size: 0.95rem; font-weight: 700; }
+  .score-pills { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 12px; }
+  .score-pill { font-size: 0.72rem; font-weight: 600; padding: 3px 9px; border-radius: 20px; }
+  .pill-pass { background: rgba(34,211,160,0.15); color: var(--accent); }
+  .pill-warn { background: rgba(245,166,35,0.15);  color: var(--amber); }
+  .pill-fail { background: rgba(240,82,82,0.15);   color: var(--red); }
+  .verdict-box { border: 1px solid var(--border); border-radius: 6px; padding: 12px 14px; transition: border-color 0.3s; }
+  .verdict-action-text { font-size: 0.88rem; color: var(--text2); line-height: 1.6; }
+
+  /* ────────────────────────────────────────────
+     TAB 3 — POSITION SIZER
+  ──────────────────────────────────────────── */
+  .mode-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+  .mode-btn {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 12px 8px; text-align: center; cursor: pointer; transition: all 0.15s; user-select: none;
+  }
+  .mode-btn:hover { border-color: var(--text3); }
+  .mode-pct  { display: block; font-size: 1.1rem; font-weight: 800; color: var(--text); margin-bottom: 3px; transition: color 0.15s; }
+  .mode-name { font-size: 0.75rem; font-weight: 600; color: var(--text2); transition: color 0.15s; }
+  .mode-btn.active-conservative { border-color: var(--accent); background: rgba(34,211,160,0.07); }
+  .mode-btn.active-conservative .mode-pct, .mode-btn.active-conservative .mode-name { color: var(--accent); }
+  .mode-btn.active-moderate { border-color: var(--amber); background: rgba(245,166,35,0.07); }
+  .mode-btn.active-moderate .mode-pct, .mode-btn.active-moderate .mode-name { color: var(--amber); }
+  .mode-btn.active-aggressive { border-color: var(--red); background: rgba(240,82,82,0.07); }
+  .mode-btn.active-aggressive .mode-pct, .mode-btn.active-aggressive .mode-name { color: var(--red); }
+
+  .results-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .result-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 14px; text-align: center; }
+  .result-box.highlight { border-color: rgba(34,211,160,0.4); background: rgba(34,211,160,0.06); }
+  .result-label { font-size: 0.75rem; font-weight: 600; color: var(--text2); margin-bottom: 6px; }
+  .result-val   { font-size: 1.25rem; font-weight: 800; color: var(--text); }
+  .result-box.highlight .result-val { color: var(--accent); }
+
+  .positions-list { display: flex; flex-direction: column; gap: 8px; }
+  .position-row {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 11px 14px;
+  }
+  .pos-label { font-size: 0.82rem; font-weight: 600; color: var(--text2); margin-bottom: 5px; }
+  .pos-bar-wrap { width: 64px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .pos-bar { height: 100%; border-radius: 2px; background: var(--accent); transition: width 0.4s; }
+  .pos-val { font-size: 0.9rem; font-weight: 700; color: var(--text); text-align: right; }
+  .pos-pct { font-size: 0.75rem; font-weight: 500; color: var(--text2); text-align: right; margin-top: 2px; }
+
+  .risk-banner {
+    border-radius: 8px; padding: 12px 14px;
+    font-size: 0.85rem; font-weight: 500; line-height: 1.55;
+    border: 1px solid; margin-top: 4px;
+  }
+  .risk-banner.low  { border-color: rgba(34,211,160,0.4); background: rgba(34,211,160,0.07); color: #6ee7c7; }
+  .risk-banner.med  { border-color: rgba(245,166,35,0.4);  background: rgba(245,166,35,0.07);  color: #fbbf5a; }
+  .risk-banner.high { border-color: rgba(240,82,82,0.4);   background: rgba(240,82,82,0.07);   color: #f87171; }
+
+  .milestones { display: flex; flex-direction: column; }
+  .milestone-row {
+    display: flex; align-items: center; gap: 14px;
+    padding: 11px 0; border-bottom: 1px solid var(--border);
+  }
+  .milestone-row:last-child { border-bottom: none; }
+  .milestone-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; border: 2px solid var(--border); }
+  .milestone-dot.reached { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 8px rgba(34,211,160,0.4); }
+  .milestone-dot.next    { border-color: var(--amber); animation: mpulse 1.5s infinite; }
+  .milestone-dot.future  { border-color: var(--border); }
+  @keyframes mpulse { 0%,100%{box-shadow:0 0 0 0 rgba(245,166,35,0.4)} 50%{box-shadow:0 0 0 5px rgba(245,166,35,0)} }
+  .milestone-info { flex: 1; }
+  .m-label  { font-size: 0.75rem; font-weight: 600; color: var(--text2); margin-bottom: 2px; }
+  .m-target { font-size: 1.05rem; font-weight: 800; color: var(--text); }
+  .m-target.reached { color: var(--accent); }
+  .m-target.next    { color: var(--amber); }
+  .m-sub { font-size: 0.75rem; font-weight: 500; color: var(--text2); margin-top: 1px; }
+  .m-sub.reached { color: var(--accent); }
+  .milestone-badge { font-size: 0.75rem; font-weight: 700; padding: 3px 9px; border-radius: 20px; white-space: nowrap; }
+  .milestone-badge.reached { background: rgba(34,211,160,0.15); color: var(--accent); }
+  .milestone-badge.next    { background: rgba(245,166,35,0.15);  color: var(--amber); }
+  .milestone-badge.future  { background: var(--surface2); color: var(--text2); }
+
+  .disclaimer {
+    text-align: center; font-size: 0.75rem; color: var(--text3);
+    margin-top: 18px; line-height: 1.7; padding: 0 8px;
+    max-width: 600px; margin-left: auto; margin-right: auto;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (min-width: 700px) {
+    body { font-size: 16px; }
+    header h1 { font-size: 1.4rem; }
+    header { padding: 22px 24px 0; }
+    .panel { padding: 22px 24px 60px; }
+    .card { padding: 22px; }
+    .item-text { font-size: 0.95rem; }
+    .ref-meaning { font-size: 0.88rem; }
+    .result-val { font-size: 1.35rem; }
+    .m-target { font-size: 1.1rem; }
+  }
+
+  @media (max-width: 520px) {
+    .section-time { display: none; }
+    .scorer-inputs { grid-template-columns: 1fr; gap: 10px; }
+    .scorer-field select { font-size: 0.95rem; padding: 10px; }
+    .ref-row { flex-wrap: wrap; gap: 5px; }
+    .ref-val { min-width: unset; width: 100%; }
+    .ref-meaning { font-size: 0.82rem; width: 100%; }
+    .mode-pct { font-size: 1rem; }
+    .mode-name { font-size: 0.7rem; }
+    .result-val { font-size: 1.1rem; }
+    .pos-val { font-size: 0.85rem; }
+    .dir-toggle-wrap { flex-direction: column; align-items: flex-start; gap: 8px; }
+  }
+
+  @media (hover: none) and (pointer: coarse) {
+    .item { padding: 11px 14px; }
+    .checkbox { width: 20px; height: 20px; }
+    .tab { padding: 13px 8px; }
+    .dir-btn { padding: 10px 24px; }
+    .mode-btn { padding: 14px 8px; }
+    input[type="range"]::-webkit-slider-thumb { width: 24px; height: 24px; }
+    input[type="number"] { height: 50px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Trading Toolkit</h1>
+  <p>45+ DTE Options &nbsp;·&nbsp; Swing Trading &nbsp;·&nbsp; No Day Trading</p>
+</header>
+
+<!-- TAB BAR -->
+<div class="tabbar">
+  <div class="tab active" id="tab-checklist" onclick="switchTab('checklist')">
+    <span class="tab-icon">☑</span>Checklist
+  </div>
+  <div class="tab" id="tab-matrix" onclick="switchTab('matrix')">
+    <span class="tab-icon">🎯</span>Barchart Matrix
+  </div>
+  <div class="tab" id="tab-sizer" onclick="switchTab('sizer')">
+    <span class="tab-icon">📐</span>Position Sizer
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PANEL 1 — CHECKLIST
+══════════════════════════════════════════ -->
+<div class="panel active" id="panel-checklist">
+
+  <div class="progress-block">
+    <div class="progress-label">
+      <span id="progressText">Progress</span>
+      <span id="progressCount">0 / 0</span>
+    </div>
+    <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+  </div>
+
+  <div class="all-clear" id="allClear">
+    <div class="all-clear-title">✓ All Checks Complete</div>
+    <div class="all-clear-sub">Thesis confirmed. Execute with discipline.</div>
+  </div>
+
+  <div id="checklist"></div>
+
+  <div class="reset-wrap">
+    <button class="reset-btn" onclick="resetAll()">↺ Reset Checklist</button>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════════════
+     PANEL 2 — BARCHART MATRIX
+══════════════════════════════════════════ -->
+<div class="panel" id="panel-matrix">
+<div class="matrix-panel">
+
+  <div class="matrix-intro">
+    After your signal fires, confirm with these <strong>3 Barchart checks</strong>. Toggle your trade direction — the reference guide and live scorer both update automatically.
+  </div>
+
+  <div class="dir-toggle-wrap">
+    <div class="dir-toggle-label">Trade Direction</div>
+    <div class="dir-toggle">
+      <div class="dir-btn active long-active" id="dir-long" onclick="setDirection('long')">▲ Long</div>
+      <div class="dir-btn" id="dir-short" onclick="setDirection('short')">▼ Short</div>
+    </div>
+  </div>
+
+  <div class="ref-cards" id="ref-cards-wrap"></div>
+
+  <div class="matrix-divider">
+    <div class="matrix-divider-line"></div>
+    <div class="matrix-divider-text">Live Scorer</div>
+    <div class="matrix-divider-line"></div>
+  </div>
+
+  <div class="scorer-card">
+    <div class="scorer-header">
+      <span class="scorer-title" id="scorer-title-text">Score Your Long</span>
+      <span class="live-badge">● Live</span>
+    </div>
+    <div class="scorer-inputs">
+      <div class="scorer-field">
+        <label>Opinion Score</label>
+        <select id="sel-opinion" onchange="scoreMatrix()">
+          <option value="">Select...</option>
+          <option value="strong_buy">72–100% Buy</option>
+          <option value="mod_buy">56–71% Buy</option>
+          <option value="neutral">Neutral (48–55%)</option>
+          <option value="mod_sell">56–71% Sell</option>
+          <option value="strong_sell">72–100% Sell</option>
+        </select>
+      </div>
+      <div class="scorer-field">
+        <label>Trend Spotter</label>
+        <select id="sel-trend" onchange="scoreMatrix()">
+          <option value="">Select...</option>
+          <option value="buy">Buy</option>
+          <option value="hold">Hold</option>
+          <option value="sell">Sell</option>
+        </select>
+      </div>
+      <div class="scorer-field">
+        <label>IV Percentile</label>
+        <select id="sel-iv" onchange="scoreMatrix()">
+          <option value="">Select...</option>
+          <option value="low">Under 25%</option>
+          <option value="mid">25–40%</option>
+          <option value="elevated">41–60%</option>
+          <option value="high">Over 60%</option>
+        </select>
+      </div>
+    </div>
+    <div class="verdict-area">
+      <div class="verdict-waiting" id="verdictWaiting">Select all three options above to get your verdict</div>
+      <div class="verdict-result" id="verdictResult">
+        <div class="verdict-top">
+          <div class="signal-dots">
+            <div class="dot" id="dot1"></div>
+            <div class="dot" id="dot2"></div>
+            <div class="dot" id="dot3"></div>
+          </div>
+          <div class="verdict-label-text" id="verdictLabel"></div>
+        </div>
+        <div class="score-pills" id="scorePills"></div>
+        <div class="verdict-box" id="verdictBox">
+          <div class="verdict-action-text" id="verdictAction"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     PANEL 3 — POSITION SIZER
+══════════════════════════════════════════ -->
+<div class="panel" id="panel-sizer">
+
+  <div class="card">
+    <div class="card-title">Account Details</div>
+    <div class="input-group">
+      <label>Current Account Balance</label>
+      <div class="input-row">
+        <span class="input-prefix">$</span>
+        <input type="number" id="accountBalance" value="15000" min="1000" step="500" oninput="calculate()">
+      </div>
+    </div>
+    <div class="slider-group">
+      <div class="slider-label-row">
+        <label>Concurrent Positions</label>
+        <span class="slider-value" id="numPosLabel">4</span>
+      </div>
+      <input type="range" id="numPositions" min="1" max="10" value="4" oninput="updateSlider(); calculate()">
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Risk Mode</div>
+    <div class="mode-grid">
+      <div class="mode-btn" id="btn-conservative" onclick="setMode('conservative')">
+        <span class="mode-pct">2–5%</span>
+        <span class="mode-name">Conservative</span>
+      </div>
+      <div class="mode-btn active-moderate" id="btn-moderate" onclick="setMode('moderate')">
+        <span class="mode-pct">10–15%</span>
+        <span class="mode-name">Moderate</span>
+      </div>
+      <div class="mode-btn" id="btn-aggressive" onclick="setMode('aggressive')">
+        <span class="mode-pct">20–25%</span>
+        <span class="mode-name">Aggressive</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Position Sizing</div>
+    <div class="results-grid">
+      <div class="result-box highlight">
+        <div class="result-label">Per Position (Min)</div>
+        <div class="result-val" id="posMin">—</div>
+      </div>
+      <div class="result-box highlight">
+        <div class="result-label">Per Position (Max)</div>
+        <div class="result-val" id="posMax">—</div>
+      </div>
+      <div class="result-box">
+        <div class="result-label">Total Deployed (Min)</div>
+        <div class="result-val" id="totalMin">—</div>
+      </div>
+      <div class="result-box">
+        <div class="result-label">Total Deployed (Max)</div>
+        <div class="result-val" id="totalMax">—</div>
+      </div>
+    </div>
+    <div class="divider"></div>
+    <div class="card-title">Positions Breakdown</div>
+    <div class="positions-list" id="positionsList"></div>
+    <br>
+    <div class="risk-banner" id="riskBanner"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Milestone Tracker</div>
+    <div class="milestones" id="milestonesList"></div>
+  </div>
+
+  <div class="disclaimer">
+    Not financial advice. Options trading involves substantial risk of loss.<br>
+    Past performance does not guarantee future results.
+  </div>
+
+</div>
+
+<script>
+/* ══════════════════════════════════════════
+   TABS
+══════════════════════════════════════════ */
+const TABS = ['checklist','matrix','sizer'];
+
+function switchTab(name) {
+  TABS.forEach(n => {
+    document.getElementById('tab-'+n).classList.toggle('active', n===name);
+    document.getElementById('panel-'+n).classList.toggle('active', n===name);
+  });
+}
+
+/* ══════════════════════════════════════════
+   CHECKLIST
+══════════════════════════════════════════ */
+const checklistData = [
+  {
+    id:'premarket', icon:'🌅', title:'Pre-Market', time:'Before 9:30 AM',
+    groups:[
+      { label:'Signal Scripts', items:[
+        { text:'Run signal scripts — log tickers, direction and strength', tag:'signal' },
+        { text:'Note high-conviction signals (strongest score / confluence)', tag:'signal' },
+      ]},
+      { label:'Barchart Confirmation', items:[
+        { text:'Check Opinion Score and Trend Spotter on signal tickers', tag:'barchart' },
+        { text:'Review Weighted Alpha — confirm momentum direction', tag:'barchart' },
+        { text:'Check IV Percentile — buying or selling premium favored?', tag:'barchart' },
+      ]},
+      { label:'Macro Check', items:[
+        { text:'Check economic calendar — any binary events today or tomorrow?', tag:'key' },
+        { text:'Note VIX level — high = expensive premiums, low = cheap', tag:'key' },
+        { text:'Check earnings dates for signal tickers — avoid week-of entries', tag:'key' },
+      ]}
+    ]
+  },
+  {
+    id:'liquidity', icon:'🔬', title:'Liquidity Filter', time:'Pre-Entry Check',
+    groups:[
+      { label:'Options Chain Quality', items:[
+        { text:'Weeklies and monthlies exist with no gaps in the chain', tag:'rule' },
+        { text:'Open Interest above 500 at target strike (ideally 1,000+)', tag:'rule' },
+        { text:'Bid/ask spread is $0.15 or less on target strike', tag:'rule' },
+        { text:'Options volume is active today — not just stock volume', tag:'rule' },
+        { text:'45–60 DTE expiration is populated and liquid', tag:'rule' },
+      ]}
+    ]
+  },
+  {
+    id:'tradeplan', icon:'⚙️', title:'Trade Planning', time:'10:30 AM – Noon',
+    groups:[
+      { label:'Strategy Selection', items:[
+        { text:'Direction confirmed: bullish, bearish, or neutral?', tag:'signal' },
+        { text:'Budget check: is synthetic stock viable, or use a debit spread?', tag:'key' },
+        { text:'Strike selected: ATM or slight OTM based on conviction', tag:'rule' },
+        { text:'DTE confirmed at 45 days or more', tag:'rule' },
+      ]},
+      { label:'Risk Management', items:[
+        { text:'Profit target set before entry (e.g. 50% of max gain for spreads)', tag:'rule' },
+        { text:'Stop loss and max loss amount defined before entry', tag:'rule' },
+        { text:'Position size: no single trade exceeds defined % of account', tag:'rule' },
+        { text:'Not entering more than 2–3 new positions today', tag:'rule' },
+      ]}
+    ]
+  },
+  {
+    id:'execution', icon:'✅', title:'Execution', time:'11 AM – 2 PM',
+    groups:[
+      { label:'Order Entry', items:[
+        { text:'Using a limit order — never a market order on options', tag:'rule' },
+        { text:'Entering mid-day (11 AM–2 PM) for tighter spreads and calmer tape', tag:'rule' },
+        { text:'Trade logged: ticker, strategy, strikes, expiry, cost basis, thesis', tag:'rule' },
+      ]}
+    ]
+  },
+  {
+    id:'eod', icon:'🌆', title:'End of Day Review', time:'After 3:30 PM',
+    groups:[
+      { label:'Open Positions', items:[
+        { text:'Review each position — is the original thesis still intact?', tag:'rule' },
+        { text:'Flag any position approaching 21 DTE — manage or close it', tag:'key' },
+        { text:'No new trades entered in the last 30 minutes of the session', tag:'rule' },
+      ]},
+      { label:'Next Day Prep', items:[
+        { text:'Re-run signal scripts for tomorrow\'s candidates', tag:'signal' },
+        { text:'Check Barchart Most Active Options — note any new setups', tag:'barchart' },
+        { text:'Review watchlist — remove tickers with degraded liquidity', tag:'barchart' },
+      ]}
+    ]
+  }
+];
+
+const tagCls   = { signal:'tag-signal', barchart:'tag-barchart', key:'tag-key', rule:'tag-rule' };
+const tagLabel = { signal:'Signal', barchart:'Barchart', key:'Key', rule:'Rule' };
+let clState = {};
+
+function buildChecklist() {
+  const container = document.getElementById('checklist');
+  container.innerHTML = '';
+  checklistData.forEach(section => {
+    const allItems = section.groups.flatMap(g => g.items);
+    const checked  = allItems.filter((_,i) => clState[section.id+'-'+i]).length;
+    const div = document.createElement('div');
+    div.className = 'section' + (checked===allItems.length && allItems.length ? ' all-done' : '');
+    div.id = 'sec-' + section.id;
+    div.innerHTML = `
+      <div class="section-header" onclick="toggleSection('${section.id}')">
+        <span class="section-icon">${section.icon}</span>
+        <span class="section-title">${section.title}</span>
+        <span class="section-time">${section.time}</span>
+        <span class="section-count">${checked}/${allItems.length}</span>
+        <span class="chevron">▼</span>
+      </div>
+      <div class="items" id="items-${section.id}"></div>`;
+    container.appendChild(div);
+    const itemsDiv = div.querySelector('.items');
+    let idx = 0;
+    section.groups.forEach(group => {
+      const lbl = document.createElement('div');
+      lbl.className = 'group-label';
+      lbl.textContent = group.label;
+      itemsDiv.appendChild(lbl);
+      group.items.forEach(item => {
+        const key = section.id+'-'+idx;
+        const el = document.createElement('div');
+        el.className = 'item'+(clState[key]?' checked':'');
+        el.onclick = () => toggleItem(key);
+        const tagHtml = item.tag ? `<span class="item-tag ${tagCls[item.tag]}">${tagLabel[item.tag]}</span>` : '';
+        el.innerHTML = `<div class="checkbox">${clState[key]?'✓':''}</div><div class="item-text">${item.text}${tagHtml}</div>`;
+        itemsDiv.appendChild(el);
+        idx++;
+      });
+    });
+  });
+  updateProgress();
+}
+
+function toggleItem(key) { clState[key]=!clState[key]; buildChecklist(); }
+function toggleSection(id) { document.getElementById('sec-'+id).classList.toggle('collapsed'); }
+function resetAll() { clState={}; buildChecklist(); }
+
+function updateProgress() {
+  let total=0, checked=0;
+  checklistData.forEach(s => {
+    const items = s.groups.flatMap(g=>g.items);
+    total += items.length;
+    items.forEach((_,i) => { if(clState[s.id+'-'+i]) checked++; });
+  });
+  const pct = total ? Math.round(checked/total*100) : 0;
+  document.getElementById('progressBar').style.width = pct+'%';
+  document.getElementById('progressCount').textContent = `${checked} / ${total}`;
+  document.getElementById('progressText').textContent  = `Progress — ${pct}%`;
+  document.getElementById('allClear').classList.toggle('show', checked===total && total>0);
+}
+
+/* ══════════════════════════════════════════
+   BARCHART MATRIX
+══════════════════════════════════════════ */
+const refContent = {
+  long: {
+    opinion: [
+      { val:'72–100% Buy',    meaning:'All timeframes bullish — strong confirmation for long entry', action:'Confirm', cls:'act-pass' },
+      { val:'56–71% Buy',     meaning:'Moderate bullish edge — acceptable but reduce position size', action:'Caution', cls:'act-warn' },
+      { val:'48–55% Neutral', meaning:'No directional edge — avoid entry until clearer', action:'Skip', cls:'act-fail' },
+      { val:'56–71% Sell',    meaning:'Bearish lean — contradicts long thesis, pass', action:'Skip', cls:'act-fail' },
+      { val:'72–100% Sell',   meaning:'Strong bearish signal — fully contradicts long, skip entirely', action:'Skip', cls:'act-fail' },
+    ],
+    trend: [
+      { val:'Buy',  meaning:'Trend confirmed bullish. Fresh Hold→Buy flip is a high-value long entry', action:'Confirm', cls:'act-pass' },
+      { val:'Hold', meaning:'Trend intact but stalling — proceed with reduced size only', action:'Caution', cls:'act-warn' },
+      { val:'Sell', meaning:'Trend is bearish — contradicts long thesis, wait for alignment', action:'Skip', cls:'act-fail' },
+    ],
+    iv: [
+      { val:'Under 25%', meaning:'Cheap options — ideal for long calls, synthetics at 45–60 DTE', action:'Buy Premium', cls:'act-pass' },
+      { val:'25–40%',    meaning:'Fair value — still favorable for buying premium directionally', action:'Buy Premium', cls:'act-pass' },
+      { val:'41–60%',    meaning:'Elevated IV — use a bull call spread to reduce cost vs outright long', action:'Use Spread', cls:'act-warn' },
+      { val:'Over 60%',  meaning:'Expensive premium — avoid buying outright; use a debit spread or wait', action:'Avoid', cls:'act-fail' },
+    ]
+  },
+  short: {
+    opinion: [
+      { val:'72–100% Sell',   meaning:'All timeframes bearish — strong confirmation for short entry', action:'Confirm', cls:'act-pass' },
+      { val:'56–71% Sell',    meaning:'Moderate bearish lean — acceptable but reduce position size', action:'Caution', cls:'act-warn' },
+      { val:'48–55% Neutral', meaning:'No directional edge — no clear short setup, avoid', action:'Skip', cls:'act-fail' },
+      { val:'56–71% Buy',     meaning:'Bullish lean — contradicts short thesis, pass', action:'Skip', cls:'act-fail' },
+      { val:'72–100% Buy',    meaning:'Strong bullish signal — fully contradicts short, skip entirely', action:'Skip', cls:'act-fail' },
+    ],
+    trend: [
+      { val:'Sell', meaning:'Trend confirmed bearish. Fresh Hold→Sell flip is a high-value short entry', action:'Confirm', cls:'act-pass' },
+      { val:'Hold', meaning:'Trend stalling — proceed cautiously with reduced short size', action:'Caution', cls:'act-warn' },
+      { val:'Buy',  meaning:'Trend is bullish — contradicts short thesis, wait for alignment', action:'Skip', cls:'act-fail' },
+    ],
+    iv: [
+      { val:'Over 60%',  meaning:'High IV — excellent for selling premium: bear call spread or credit spread', action:'Sell Premium', cls:'act-pass' },
+      { val:'41–60%',    meaning:'Elevated IV — good for credit spreads or buying long puts at a discount', action:'Use Spread', cls:'act-pass' },
+      { val:'25–40%',    meaning:'Fair — buying long puts is still viable; credit spreads less attractive', action:'Buy Put', cls:'act-warn' },
+      { val:'Under 25%', meaning:'Cheap IV — best for buying long puts outright at 45–60 DTE', action:'Buy Put', cls:'act-warn' },
+    ]
+  }
+};
+
+function buildRefCards(dir) {
+  const content = refContent[dir];
+  const cards = [
+    { id:'opinion', title:'① Opinion Score',  sub:'Composite moving average score — 0 to 100%' },
+    { id:'trend',   title:'② Trend Spotter',   sub:"Barchart's proprietary trend signal" },
+    { id:'iv',      title:'③ IV Percentile',   sub:'How expensive options are vs. the past year' },
+  ];
+  document.getElementById('ref-cards-wrap').innerHTML = cards.map(c => `
+    <div class="ref-card">
+      <div class="ref-card-header">
+        <span class="ref-card-title">${c.title}</span>
+        <span class="ref-card-sub">${c.sub}</span>
+      </div>
+      <div class="ref-rows">
+        ${content[c.id].map(r=>`
+          <div class="ref-row">
+            <div class="ref-val">${r.val}</div>
+            <div class="ref-meaning">${r.meaning}</div>
+            <div class="ref-action ${r.cls}">${r.action}</div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+
+let currentDirection = 'long';
+
+function setDirection(dir) {
+  currentDirection = dir;
+  document.getElementById('dir-long').className  = 'dir-btn' + (dir==='long'  ? ' active long-active'  : '');
+  document.getElementById('dir-short').className = 'dir-btn' + (dir==='short' ? ' active short-active' : '');
+  document.getElementById('scorer-title-text').textContent = dir==='long' ? 'Score Your Long' : 'Score Your Short';
+  buildRefCards(dir);
+  ['sel-opinion','sel-trend','sel-iv'].forEach(id => { document.getElementById(id).value=''; });
+  document.getElementById('verdictWaiting').style.display = 'block';
+  document.getElementById('verdictResult').classList.remove('show');
+}
+
+function scoreMatrix() {
+  const opinion = document.getElementById('sel-opinion').value;
+  const trend   = document.getElementById('sel-trend').value;
+  const iv      = document.getElementById('sel-iv').value;
+
+  if (!opinion||!trend||!iv) {
+    document.getElementById('verdictWaiting').style.display = 'block';
+    document.getElementById('verdictResult').classList.remove('show');
+    return;
+  }
+  document.getElementById('verdictWaiting').style.display = 'none';
+  document.getElementById('verdictResult').classList.add('show');
+
+  const isLong = currentDirection === 'long';
+  const oScore = { strong_buy:isLong?2:-2, mod_buy:isLong?1:-1, neutral:0, mod_sell:isLong?-1:1, strong_sell:isLong?-2:2 }[opinion];
+  const tScore = { buy:isLong?2:-1, hold:1, sell:isLong?-1:2 }[trend];
+  const iScore = { low:isLong?2:0, mid:isLong?2:1, elevated:isLong?1:2, high:isLong?0:2 }[iv];
+  const total  = oScore + tScore + iScore;
+
+  const oPillCls = { strong_buy:isLong?'pill-pass':'pill-fail', mod_buy:'pill-warn', neutral:'pill-warn', mod_sell:'pill-warn', strong_sell:isLong?'pill-fail':'pill-pass' }[opinion];
+  const tPillCls = { buy:isLong?'pill-pass':'pill-fail', hold:'pill-warn', sell:isLong?'pill-fail':'pill-pass' }[trend];
+  const iPillCls = { low:isLong?'pill-pass':'pill-warn', mid:isLong?'pill-pass':'pill-warn', elevated:isLong?'pill-warn':'pill-pass', high:isLong?'pill-fail':'pill-pass' }[iv];
+  const oPillLbl = { strong_buy:'Opinion ✓', mod_buy:'Opinion ~', neutral:'Opinion –', mod_sell:'Opinion ~', strong_sell:isLong?'Opinion ✗':'Opinion ✓' }[opinion];
+  const tPillLbl = { buy:isLong?'Trend ✓':'Trend ✗', hold:'Trend ~', sell:isLong?'Trend ✗':'Trend ✓' }[trend];
+  const iPillLbl = { low:isLong?'IV Cheap ✓':'IV Low ~', mid:isLong?'IV Fair ✓':'IV Fair ~', elevated:isLong?'IV High ~':'IV Elevated ✓', high:isLong?'IV Expensive ✗':'IV High ✓' }[iv];
+
+  document.getElementById('scorePills').innerHTML =
+    [[oPillLbl,oPillCls],[tPillLbl,tPillCls],[iPillLbl,iPillCls]]
+    .map(([l,c])=>`<span class="score-pill ${c}">${l}</span>`).join('');
+
+  let label, action, dotCls, boxColor;
+  if      (total>=5) { label='✓ High Conviction'; action='All three factors align. Full-size entry — execute your plan.'; dotCls='green'; boxColor='rgba(34,211,160,0.4)'; }
+  else if (total>=3) { label='~ Moderate Setup';  action='Two of three factors align. Reduce size by 50% or wait for better confluence.'; dotCls='yellow'; boxColor='rgba(245,166,35,0.4)'; }
+  else if (total>=1) { label='⚠ Weak Signal';     action='Only one factor aligns. Pass and wait for a cleaner setup.'; dotCls='yellow'; boxColor='rgba(245,166,35,0.4)'; }
+  else               { label='✗ Do Not Enter';    action='Signals conflict with your direction. Skip this ticker today.'; dotCls='red'; boxColor='rgba(240,82,82,0.4)'; }
+
+  if (isLong) {
+    if (iv==='high' && oScore>0) action += ' IV is very expensive — use a bull call spread instead of an outright long call.';
+    if (opinion==='strong_buy' && trend==='buy' && (iv==='low'||iv==='mid')) action += ' Perfect setup for a synthetic long or long call at 45–60 DTE.';
+    if (opinion==='strong_buy' && trend==='buy' && iv==='elevated') action += ' Good direction — consider a bull call spread to reduce premium cost.';
+    if (trend==='sell' && oScore>0) action += ' Trend Spotter conflict — wait for it to flip to Buy before entering.';
+  } else {
+    if (iv==='low' && oScore<0) action += ' IV is cheap — long puts are inexpensive, great for buying at 45–60 DTE.';
+    if (opinion==='strong_sell' && trend==='sell' && (iv==='elevated'||iv==='high')) action += ' Strong setup — consider a bear put spread or a credit call spread.';
+    if (opinion==='strong_sell' && trend==='sell' && (iv==='low'||iv==='mid')) action += ' Direction confirmed — long put or bear put spread at 45–60 DTE is ideal.';
+    if (iv==='high' && oScore<0) action += ' High IV with bearish signal — a bear call spread (credit) is a strong choice here.';
+    if (trend==='buy' && oScore<0) action += ' Trend Spotter conflicts with bearish thesis — wait for it to flip to Sell or Hold.';
+  }
+
+  const lbl = document.getElementById('verdictLabel');
+  lbl.textContent = label;
+  lbl.style.color = dotCls==='green'?'var(--accent)':dotCls==='red'?'var(--red)':'var(--amber)';
+  document.getElementById('verdictAction').textContent = action;
+  document.getElementById('verdictBox').style.borderColor = boxColor;
+  ['dot1','dot2','dot3'].forEach(id => { document.getElementById(id).className='dot '+dotCls; });
+}
+
+/* ══════════════════════════════════════════
+   POSITION SIZER
+══════════════════════════════════════════ */
+let currentMode = 'moderate';
+
+const modes = {
+  conservative: { min:0.02, max:0.05, riskClass:'low',
+    msg:'✓ Defined-risk spreads recommended. Focus on premium selling at 45 DTE. Survivable drawdown range even in a bad streak.' },
+  moderate: { min:0.10, max:0.15, riskClass:'med',
+    msg:'⚡ Suitable for high-conviction setups only. Mix spreads and long options. One bad run means a 30–40% drawdown is possible.' },
+  aggressive: { min:0.20, max:0.25, riskClass:'high',
+    msg:'⚠ Swing-for-the-fences mode. Long options on catalyst plays only. Real blowup risk — use only when all signals align strongly.' }
+};
+
+const milestoneTargets = [
+  { label:'Starter',      amount:15000, period:'Starting Point' },
+  { label:'Double Up',    amount:22000, period:'Near Term' },
+  { label:'Real Money',   amount:35000, period:'Mid Term' },
+  { label:'Stretch Goal', amount:50000, period:'Long Term' },
+  { label:'Moon Shot',    amount:75000, period:'Dream Goal' },
+];
+
+function fmtFull(n) { return '$' + Math.round(n).toLocaleString('en-US'); }
+
+function setMode(mode) {
+  currentMode = mode;
+  ['conservative','moderate','aggressive'].forEach(m => {
+    document.getElementById('btn-'+m).className = 'mode-btn' + (m===mode ? ' active-'+m : '');
+  });
+  calculate();
+}
+
+function updateSlider() {
+  document.getElementById('numPosLabel').textContent = document.getElementById('numPositions').value;
+}
+
+function calculate() {
+  const balance = parseFloat(document.getElementById('accountBalance').value) || 15000;
+  const numPos  = parseInt(document.getElementById('numPositions').value);
+  const mode    = modes[currentMode];
+
+  const posMinAmt   = balance * mode.min;
+  const posMaxAmt   = balance * mode.max;
+  const totalMinAmt = Math.min(posMinAmt * numPos, balance);
+  const totalMaxAmt = Math.min(posMaxAmt * numPos, balance);
+
+  document.getElementById('posMin').textContent   = fmtFull(posMinAmt);
+  document.getElementById('posMax').textContent   = fmtFull(posMaxAmt);
+  document.getElementById('totalMin').textContent = fmtFull(totalMinAmt);
+  document.getElementById('totalMax').textContent = fmtFull(totalMaxAmt);
+
+  const list = document.getElementById('positionsList');
+  list.innerHTML = '';
+  for (let i = 1; i <= numPos; i++) {
+    const row = document.createElement('div');
+    row.className = 'position-row';
+    const barPct = Math.min(mode.max * 100 * 4, 100);
+    row.innerHTML = `
+      <div>
+        <div class="pos-label">Position ${i}</div>
+        <div class="pos-bar-wrap"><div class="pos-bar" style="width:${barPct}%"></div></div>
+      </div>
+      <div>
+        <div class="pos-val">${fmtFull(posMinAmt)} – ${fmtFull(posMaxAmt)}</div>
+        <div class="pos-pct">${(mode.min*100).toFixed(0)}% – ${(mode.max*100).toFixed(0)}% of account</div>
+      </div>`;
+    list.appendChild(row);
+  }
+
+  document.getElementById('riskBanner').className = 'risk-banner ' + mode.riskClass;
+  document.getElementById('riskBanner').textContent = mode.msg;
+
+  renderMilestones(balance);
+}
+
+function renderMilestones(balance) {
+  const list = document.getElementById('milestonesList');
+  list.innerHTML = '';
+  let nextFound = false;
+  milestoneTargets.forEach(m => {
+    const isReached = balance >= m.amount;
+    const isNext    = !isReached && !nextFound;
+    if (isNext) nextFound = true;
+    const status   = isReached ? 'reached' : isNext ? 'next' : 'future';
+    const needMore = m.amount - balance;
+    const pctGain  = ((m.amount / Math.max(balance,1) - 1) * 100).toFixed(0);
+    const badgeText = isReached ? '✓ Done' : `+${pctGain}% away`;
+    const row = document.createElement('div');
+    row.className = 'milestone-row';
+    row.innerHTML = `
+      <div class="milestone-dot ${status}"></div>
+      <div class="milestone-info">
+        <div class="m-label">${m.label} · ${m.period}</div>
+        <div class="m-target ${status}">${fmtFull(m.amount)}</div>
+        <div class="m-sub ${status}">
+          ${isReached ? '✓ Reached — raise your position sizes' : isNext ? `Need ${fmtFull(needMore)} more to reach this level` : `${pctGain}% growth from current balance`}
+        </div>
+      </div>
+      <div class="milestone-badge ${status}">${badgeText}</div>`;
+    list.appendChild(row);
+  });
+}
+
+/* ══════════════════════════════════════════
+   INIT
+══════════════════════════════════════════ */
+buildRefCards('long');
+buildChecklist();
+updateSlider();
+calculate();
+</script>
+</body>
+</html>
